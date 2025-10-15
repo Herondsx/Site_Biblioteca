@@ -1,0 +1,114 @@
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f0f2f5;
+}
+
+.bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes scaleUp {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.book-card-enter {
+    animation: scaleUp 0.4s ease-out backwards;
+}
+
+.form-container {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Custom scrollbar for webkit browsers */
+.modal-content::-webkit-scrollbar, .db-grid::-webkit-scrollbar, .sidebar-scroll::-webkit-scrollbar {
+    width: 8px;
+}
+.modal-content::-webkit-scrollbar-track, .db-grid::-webkit-scrollbar-track, .sidebar-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-thumb, .db-grid::-webkit-scrollbar-thumb, .sidebar-scroll::-webkit-scrollbar-thumb {
+    background: #a8a29e; /* stone-400 */
+    border-radius: 10px;
+}
+.modal-content::-webkit-scrollbar-thumb:hover, .db-grid::-webkit-scrollbar-thumb:hover, .sidebar-scroll::-webkit-scrollbar-thumb:hover {
+    background: #78716c; /* stone-500 */
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 40;
+    justify-content: center;
+    align-items: center;
+    display: none; /* Hidden by default */
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleUp 0.3s ease-out;
+}
+
+.db-grid {
+    height: 300px;
+    overflow-y: auto;
+    border: 1px solid #e2e8f0;
+}
+.db-grid table {
+    width: 100%;
+}
+.db-grid th, .db-grid td {
+    text-align: left;
+    padding: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 0.8rem;
+}
+.db-grid th {
+    background-color: #f8fafc;
+    position: sticky;
+    top: 0;
+}
+
+.status-disponivel { color: #10B981; }
+.status-alugado { color: #F59E0B; }
+.status-atrasado { color: #EF4444; }
+
+#admin-fab {
+    display: none; /* Hidden by default, JS will change to 'flex' */
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: #0d9488; /* teal-600 */
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    justify-content: center;
+    align-items: center;
+    z-index: 35;
+    transition: transform 0.2s, background-color 0.2s;
+    cursor: pointer;
+}
+#admin-fab:hover {
+    transform: scale(1.1);
+    background-color: #0f766e; /* teal-700 */
+}
