@@ -100,7 +100,7 @@ O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvol
 **1. Clone o repositório**
 ```bash
 git clone https://github.com/Herondsx/Projeto_Eng.git
-cd Projeto_Eng
+cd Site_Biblioteca
 ```
 
 **2. Abra o arquivo HTML**
@@ -179,27 +179,6 @@ http://localhost:8000
 - Sistema de busca otimizado
 - **Custo estimado:** aproximadamente R$ 7.400/mês
 
----
-
-## 🏗️ Arquitetura do Sistema
-```
-Sistema de Biblioteca
-│
-├── Frontend (SPA)
-│   ├── Autenticação
-│   ├── Catálogo de Livros
-│   ├── Feed Social
-│   └── Painel Admin
-│
-├── Armazenamento Local
-│   ├── LocalStorage (dados persistentes)
-│   └── SessionStorage (sessão do usuário)
-│
-└── Recursos Externos
-    ├── Three.js (efeitos 3D)
-    ├── Day.js (manipulação de datas)
-    └── Tailwind CSS (estilos)
-```
 
 ---
 
