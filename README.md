@@ -179,19 +179,6 @@ http://localhost:8000
 - Sistema de busca otimizado
 - **Custo estimado:** aproximadamente R$ 7.400/mês
 
-
----
-
-## 🤝 Contribuindo
-
-Contribuições são bem-vindas! Para contribuir:
-
-1. Fork o projeto
-2. Crie sua feature branch (`git checkout -b feature/NovaFuncionalidade`)
-3. Commit suas mudanças (`git commit -m 'Adiciona nova funcionalidade'`)
-4. Push para a branch (`git push origin feature/NovaFuncionalidade`)
-5. Abra um Pull Request
-
 ---
 
 ## 👥 Equipe de Desenvolvimento
@@ -205,11 +192,6 @@ Contribuições são bem-vindas! Para contribuir:
 
 ---
 
-## 📄 Licença
-
-Este projeto foi desenvolvido como trabalho acadêmico para a disciplina de Engenharia de Software da FEI.
-
----
 
 ## 🔗 Links Úteis
 
@@ -219,14 +201,6 @@ Este projeto foi desenvolvido como trabalho acadêmico para a disciplina de Enge
 
 ---
 
-## 📞 Contato
+## 📄 Licença
 
-**Instituição:** Fundação Educacional Inaciana Padre Sabóia de Medeiros - FEI  
-**Localização:** São Bernardo do Campo, SP  
-**Ano:** 2025
-
----
-
-### ⭐ Se este projeto foi útil para você, considere dar uma estrela!
-
-**Desenvolvido com 💙 pela equipe FEI**
+Este projeto foi desenvolvido como trabalho acadêmico para a disciplina de Engenharia de Software da FEI.
