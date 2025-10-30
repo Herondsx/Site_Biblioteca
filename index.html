@@ -1,114 +1,186 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Biblioteca Acadêmica 3D</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sistema de Biblioteca Acadêmica 3D</title>
+
+  <!-- Tailwind + Fonte -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Estilos do projeto -->
+  <link rel="stylesheet" href="style.css"/>
 </head>
 <body class="text-gray-800">
-    <canvas id="login-bg-canvas" class="bg-canvas"></canvas>
-    
-    <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
-        <div class="w-full max-w-md form-container bg-black/30 rounded-2xl shadow-2xl p-8 space-y-6">
-            <form id="login-form">
-                <h2 class="text-3xl sm:text-4xl font-extrabold text-center text-white">Bem-vindo!</h2>
-                <p class="text-center text-teal-200 mb-6">Acesse sua conta para começar.</p>
-                <div id="login-error" class="text-red-300 text-center mb-4 hidden"></div>
-                <div class="space-y-4">
-                    <input type="text" id="login-email" placeholder="Email (ou 'admin')" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                    <input type="password" id="login-password" placeholder="Senha (ou 'admin')" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                </div>
-                <button type="submit" class="w-full mt-6 py-3 px-4 bg-teal-600 hover:bg-teal-700 rounded-lg text-white font-semibold transition-all duration-300 transform active:scale-95">Entrar</button>
-                <p class="text-center text-gray-300 mt-6">
-                    Não tem uma conta? <a href="#" id="show-register-form" class="font-semibold text-teal-400 hover:underline">Cadastre-se</a>
-                </p>
-            </form>
+  <!-- BG 3D telas de login/app -->
+  <canvas id="login-bg-canvas" class="bg-canvas"></canvas>
 
-            <form id="register-form" class="hidden">
-                 <h2 class="text-3xl sm:text-4xl font-extrabold text-center text-white">Crie sua Conta</h2>
-                 <p class="text-center text-teal-200 mb-6">É rápido e fácil.</p>
-                <div id="register-error" class="text-red-300 text-center mb-4 hidden"></div>
-                <div id="register-success" class="text-green-300 text-center mb-4 hidden"></div>
-                <div class="space-y-4">
-                    <input type="text" id="register-name" placeholder="Nome Completo" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                    <input type="email" id="register-email" placeholder="Email" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                    <input type="password" id="register-password" placeholder="Senha" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
-                </div>
-                <button type="submit" class="w-full mt-6 py-3 px-4 bg-teal-600 hover:bg-teal-700 rounded-lg text-white font-semibold transition-all duration-300 transform active:scale-95">Criar Conta</button>
-                <p class="text-center text-gray-300 mt-6">
-                    Já tem uma conta? <a href="#" id="show-login-form" class="font-semibold text-teal-400 hover:underline">Faça Login</a>
-                </p>
-            </form>
+  <!-- AUTH -->
+  <div id="auth-container" class="min-h-screen flex items-center justify-center p-4">
+    <div class="w-full max-w-md form-container bg-black/30 rounded-2xl shadow-2xl p-8 space-y-6">
+      <!-- Login -->
+      <form id="login-form">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-center text-white">Bem-vindo!</h2>
+        <p class="text-center text-teal-200 mb-6">Acesse sua conta para começar.</p>
+        <div id="login-error" class="text-red-300 text-center mb-4 hidden"></div>
+        <div class="space-y-4">
+          <input type="text" id="login-email" placeholder="Email (ou 'admin')" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <input type="password" id="login-password" placeholder="Senha (ou 'admin')" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
         </div>
-    </div>
-    
-    <div id="app-container" class="hidden relative">
-        <canvas id="app-bg-canvas" class="bg-canvas"></canvas>
-        <header class="bg-white/80 backdrop-blur-sm shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
-            <div class="flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-teal-600 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.002 1.742l7.338 3.669a1 1 0 00.789 0l7.338-3.669a1 1 0 00.002-1.742l-7-3.5z" /><path d="M3 9.252v5.096a1 1 0 00.528.884l6.162 3.081a1 1 0 00.946 0l6.162-3.081A1 1 0 0017 14.348V9.252l-6.606 3.303a1 1 0 01-.788 0L3 9.252z" /></svg>
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Biblioteca</h1>
-            </div>
-            <div class="flex items-center space-x-2 sm:space-x-4">
-                <div id="user-profile" class="flex items-center"></div>
-                <button id="logout-btn" class="bg-red-500 text-white px-3 py-2 sm:px-4 rounded-lg hover:bg-red-600 transition-all duration-300 transform active:scale-95 text-sm sm:text-base">Sair</button>
-            </div>
-        </header>
-        <main class="p-4 sm:p-6 md:p-8 relative z-10">
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
-                <div class="lg:col-span-3">
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm mb-6">
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                            <input type="text" id="search-input" placeholder="Buscar por título, autor..." class="md:col-span-2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/50">
-                            <select id="category-filter" class="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/50"><option value="all">Todas as Categorias</option></select>
-                        </div>
-                    </div>
-                    <div id="book-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-                </div>
-                <aside class="lg:col-span-1 space-y-6 sidebar-scroll">
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Rankings</h2><div id="rankings-content" class="space-y-4"></div>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-red-600">Lista Negra</h2><div id="blacklist-content" class="space-y-2"></div>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2">Meus Livros</h2><div id="my-books-content" class="space-y-2"></div>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
-                        <h2 class="text-xl font-bold mb-4 border-b pb-2 text-teal-600">Loja de Recompensas</h2><div id="rewards-store-content" class="space-y-3"></div>
-                    </div>
-                </aside>
-            </div>
-        </main>
-    </div>
+        <button type="submit" class="w-full mt-6 py-3 px-4 bg-teal-600 hover:bg-teal-700 rounded-lg text-white font-semibold transition-all duration-300 transform active:scale-95">Entrar</button>
+        <p class="text-center text-gray-300 mt-6">
+          Não tem uma conta? <a href="#" id="show-register-form" class="font-semibold text-teal-400 hover:underline">Cadastre-se</a>
+        </p>
+      </form>
 
-    <button id="admin-fab" class="items-center"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a1 1 0 000-2H4a1 1 0 000 2zm12 0h-3a1 1 0 100 2h3a1 1 0 100-2zM4 9a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm0 4a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm2 5a1 1 0 100-2h8a1 1 0 100 2H6z" clip-rule="evenodd" /></svg></button>
-    
-    <div id="book-modal" class="modal-backdrop"><div id="book-modal-content" class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 p-6 modal-content relative"></div></div>
-    <div id="admin-modal" class="modal-backdrop">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 lg:w-3/4 p-6 modal-content relative">
-            <button data-action="close-modal" data-target="admin-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-transform duration-200 hover:rotate-90"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-            <h2 class="text-2xl font-bold mb-4">Simulação do Banco de Dados</h2>
-            <p class="text-gray-600 mb-4">Qualquer interação na interface atualizará estas tabelas instantaneamente.</p>
-            <div id="db-tabs-container" class="flex border-b mb-4 overflow-x-auto">
-                <button data-tab="db-books" class="db-tab p-4 text-teal-600 border-b-2 border-teal-600 font-semibold whitespace-nowrap">Livros</button>
-                <button data-tab="db-users" class="db-tab p-4 text-gray-500 whitespace-nowrap">Usuários</button>
-                <button data-tab="db-rentals" class="db-tab p-4 text-gray-500 whitespace-nowrap">Aluguéis</button>
-            </div>
-            <div id="db-books-content" class="db-tab-content"><div class="db-grid"><table id="db-books-table"></table></div></div>
-            <div id="db-users-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-users-table"></table></div></div>
-            <div id="db-rentals-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-rentals-table"></table></div></div>
+      <!-- Cadastro -->
+      <form id="register-form" class="hidden">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-center text-white">Crie sua Conta</h2>
+        <p class="text-center text-teal-200 mb-6">É rápido e fácil.</p>
+        <div id="register-error" class="text-red-300 text-center mb-4 hidden"></div>
+        <div id="register-success" class="text-green-300 text-center mb-4 hidden"></div>
+        <div class="space-y-4">
+          <input type="text" id="register-name" placeholder="Nome Completo" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <input type="email" id="register-email" placeholder="Email" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
+          <input type="password" id="register-password" placeholder="Senha" required class="w-full px-4 py-3 bg-gray-700/50 border border-gray-500 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-teal-500">
         </div>
+        <button type="submit" class="w-full mt-6 py-3 px-4 bg-teal-600 hover:bg-teal-700 rounded-lg text-white font-semibold transition-all duration-300 transform active:scale-95">Criar Conta</button>
+        <p class="text-center text-gray-300 mt-6">
+          Já tem uma conta? <a href="#" id="show-login-form" class="font-semibold text-teal-400 hover:underline">Faça Login</a>
+        </p>
+      </form>
     </div>
+  </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script>dayjs.extend(dayjs_plugin_relativeTime);</script>
-    <script src="script.js"></script>
+  <!-- APP -->
+  <div id="app-container" class="hidden relative">
+    <canvas id="app-bg-canvas" class="bg-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="bg-white/80 backdrop-blur-sm shadow-md p-4 flex justify-between items-center sticky top-0 z-30">
+      <div class="flex items-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-teal-600 mr-2" viewBox="0 0 20 20" fill="currentColor"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3.5a1 1 0 00.002 1.742l7.338 3.669a1 1 0 00.789 0l7.338-3.669a1 1 0 00.002-1.742l-7-3.5z" /><path d="M3 9.252v5.096a1 1 0 00.528.884l6.162 3.081a1 1 0 00.946 0l6.162-3.081A1 1 0 0017 14.348V9.252l-6.606 3.303a1 1 0 01-.788 0L3 9.252z" /></svg>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Biblioteca</h1>
+      </div>
+      <div class="flex items-center space-x-2 sm:space-x-4">
+        <div id="user-profile" class="flex items-center"></div>
+        <button id="logout-btn" class="bg-red-500 text-white px-3 py-2 sm:px-4 rounded-lg hover:bg-red-600 transition-all duration-300 transform active:scale-95 text-sm sm:text-base">Sair</button>
+      </div>
+    </header>
+
+    <!-- Conteúdo -->
+    <main class="p-4 sm:p-6 md:p-8 relative z-10">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Coluna principal -->
+        <div class="lg:col-span-3 space-y-6">
+          <!-- Tabs Catálogo / Rede -->
+          <div class="bg-white/80 backdrop-blur-sm p-3 rounded-lg shadow-sm">
+            <div class="flex gap-2">
+              <button id="tab-catalog" class="tab-btn tab-active">Catálogo</button>
+              <button id="tab-social" class="tab-btn">Rede Social</button>
+            </div>
+          </div>
+
+          <!-- CATÁLOGO -->
+          <section id="catalog-view" class="space-y-6">
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <input type="text" id="search-input" placeholder="Buscar por título, autor..." class="md:col-span-2 p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/50">
+                <select id="category-filter" class="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/50">
+                  <option value="all">Todas as Categorias</option>
+                </select>
+              </div>
+            </div>
+            <div id="book-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+          </section>
+
+          <!-- REDE SOCIAL -->
+          <section id="social-view" class="space-y-6 hidden">
+            <!-- Composer -->
+            <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm">
+              <div class="flex items-start gap-3">
+                <div class="h-10 w-10 rounded-full bg-teal-600 flex items-center justify-center text-white font-bold">U</div>
+                <div class="flex-1">
+                  <textarea id="post-text" rows="3" class="w-full p-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white/60" placeholder="Compartilhe o que você está lendo ou pensando..."></textarea>
+                  <div class="mt-2 grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <select id="post-book" class="p-2 border border-gray-300 rounded-lg bg-white/60">
+                      <option value="">Vincular livro (opcional)</option>
+                    </select>
+                    <div class="sm:col-span-2 text-right">
+                      <button id="publish-post" class="btn-primary">Publicar</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Feed -->
+            <div id="feed-list" class="space-y-4"></div>
+          </section>
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1 space-y-6 sidebar-scroll">
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2">Rankings</h2>
+            <div id="rankings-content" class="space-y-4"></div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 text-red-600">Lista Negra</h2>
+            <div id="blacklist-content" class="space-y-2"></div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2">Meus Livros</h2>
+            <div id="my-books-content" class="space-y-2"></div>
+          </div>
+          <div class="bg-white/80 backdrop-blur-sm p-4 rounded-lg shadow-sm transition-all duration-300 hover:shadow-lg">
+            <h2 class="text-xl font-bold mb-4 border-b pb-2 text-teal-600">Loja de Recompensas</h2>
+            <div id="rewards-store-content" class="space-y-3"></div>
+          </div>
+        </aside>
+      </div>
+    </main>
+  </div>
+
+  <!-- FAB Admin -->
+  <button id="admin-fab" class="items-center">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 2a1 1 0 00-1 1v1a1 1 0 002 0V3a1 1 0 00-1-1zM4 4h3a1 1 0 000-2H4a1 1 0 000 2zm12 0h-3a1 1 0 100 2h3a1 1 0 100-2zM4 9a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm0 4a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zm2 5a1 1 0 100-2h8a1 1 0 100 2H6z" clip-rule="evenodd" /></svg>
+  </button>
+
+  <!-- MODAIS -->
+  <div id="book-modal" class="modal-backdrop">
+    <div id="book-modal-content" class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 p-6 modal-content relative"></div>
+  </div>
+
+  <div id="admin-modal" class="modal-backdrop">
+    <div class="bg-white rounded-lg shadow-xl w-11/12 lg:w-3/4 p-6 modal-content relative">
+      <button data-action="close-modal" data-target="admin-modal" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 transition-transform duration-200 hover:rotate-90">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+      </button>
+      <h2 class="text-2xl font-bold mb-4">Simulação do Banco de Dados</h2>
+      <p class="text-gray-600 mb-4">Qualquer interação na interface atualizará estas tabelas instantaneamente.</p>
+
+      <div id="db-tabs-container" class="flex border-b mb-4 overflow-x-auto">
+        <button data-tab="db-books" class="db-tab p-4 text-teal-600 border-b-2 border-teal-600 font-semibold whitespace-nowrap">Livros</button>
+        <button data-tab="db-users" class="db-tab p-4 text-gray-500 whitespace-nowrap">Usuários</button>
+        <button data-tab="db-rentals" class="db-tab p-4 text-gray-500 whitespace-nowrap">Aluguéis</button>
+        <button data-tab="db-posts" class="db-tab p-4 text-gray-500 whitespace-nowrap">Posts</button>
+      </div>
+
+      <div id="db-books-content" class="db-tab-content"><div class="db-grid"><table id="db-books-table"></table></div></div>
+      <div id="db-users-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-users-table"></table></div></div>
+      <div id="db-rentals-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-rentals-table"></table></div></div>
+      <div id="db-posts-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-posts-table"></table></div></div>
+    </div>
+  </div>
+
+  <!-- Libs -->
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/plugin/relativeTime.js"></script>
+  <script>dayjs.extend(dayjs_plugin_relativeTime);</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- App -->
+  <script src="script.js"></script>
 </body>
 </html>
