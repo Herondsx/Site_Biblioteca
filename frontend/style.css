@@ -1,109 +1,153 @@
+/* style.css - Estilização Moderna e Relaxante */
+
+/* --- Variáveis Globais (Cores Suaves) --- */
+:root {
+    --color-primary: #14B8A6; /* Teal 600 */
+    --color-secondary: #3B82F6; /* Blue 500 */
+    --color-background: #F4F8FB; /* Off-White/Soft Gray (Fundo Limpo) */
+    --color-card-bg: #FFFFFF;
+    --color-text-dark: #374151; /* Gray 700 */
+    --color-text-light: #6B7280; /* Gray 500 */
+    --shadow-subtle: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Base e Tipografia --- */
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #f0f2f5;
-}
-.bg-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-}
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-@keyframes scaleUp {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-}
-.modal-backdrop {
-    display: none;
-    animation: fadeIn 0.3s ease-out;
-}
-.modal-content {
-    animation: scaleUp 0.3s ease-out;
-}
-.book-card-enter, .post-card-enter {
-    animation: scaleUp 0.4s ease-out backwards;
-}
-.form-container {
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    color: var(--color-text-dark);
+    background-color: var(--color-background);
+    /* Garante que o fundo do body seja o padrão de fundo para o login/fora da app */
+    overflow-x: hidden;
 }
 
-/* Custom scrollbar for webkit browsers */
-.modal-content::-webkit-scrollbar, .db-grid::-webkit-scrollbar, .sidebar-scroll::-webkit-scrollbar {
-    width: 8px;
-}
-.modal-content::-webkit-scrollbar-track, .db-grid::-webkit-scrollbar-track, .sidebar-scroll::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 10px;
-}
-.modal-content::-webkit-scrollbar-thumb, .db-grid::-webkit-scrollbar-thumb, .sidebar-scroll::-webkit-scrollbar-thumb {
-    background: #a8a29e; /* stone-400 */
-    border-radius: 10px;
-}
-.modal-content::-webkit-scrollbar-thumb:hover, .db-grid::-webkit-scrollbar-thumb:hover, .sidebar-scroll::-webkit-scrollbar-thumb:hover {
-    background: #78716c; /* stone-500 */
+/* --- Fundo Abstrato da Aplicação (NOVO: Substitui a Rosquinha 3D) --- */
+#appContainer {
+    position: relative;
+    /* Gradiente Azul Suave e Relaxante */
+    background: linear-gradient(135deg, #F4F8FB 0%, #E0F2F9 100%); 
+    min-height: 100vh;
 }
 
-.modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 40;
-    justify-content: center;
-    align-items: center;
+/* --- Header e Navegação --- */
+header {
+    background-color: var(--color-card-bg);
+    box-shadow: var(--shadow-subtle);
 }
-.modal-content {
-    max-height: 90vh;
-    overflow-y: auto;
-}
-.db-grid {
-    height: 300px;
-    overflow-y: auto;
-    border: 1px solid #e2e8f0;
-}
-.db-grid table {
-    width: 100%;
-}
-.db-grid th, .db-grid td {
-    text-align: left;
-    padding: 8px;
-    border-bottom: 1px solid #e2e8f0;
-    font-size: 0.8rem;
-}
-.db-grid th {
-    background-color: #f8fafc;
-    position: sticky;
-    top: 0;
-}
-.status-disponivel { color: #10B981; }
-.status-alugado { color: #F59E0B; }
-.status-atrasado { color: #EF4444; }
-#admin-fab {
-    display: none; /* Hidden by default */
-    position: fixed;
-    bottom: 1.5rem;
-    right: 1.5rem;
-    width: 3.5rem;
-    height: 3.5rem;
-    border-radius: 50%;
-    background-color: #0d9488; /* teal-600 */
-    color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    justify-content: center;
-    align-items: center;
-    z-index: 35;
-    transition: transform 0.2s, background-color 0.2s;
+
+.nav-button {
+    padding: 8px 16px;
+    border-radius: 9999px; /* Pill shape */
+    font-weight: 500;
+    transition: all 0.2s ease;
+    color: var(--color-text-light);
+    background-color: transparent;
+    border: none;
     cursor: pointer;
 }
-#admin-fab:hover {
-    transform: scale(1.1);
-    background-color: #0f766e; /* teal-700 */
+
+.nav-button:hover {
+    color: var(--color-primary);
+    background-color: #F0FDFA; /* Soft Teal Hover */
+}
+
+.nav-button.active {
+    color: var(--color-primary);
+    background-color: #E0F2F9; /* Soft Blue/Teal background */
+    font-weight: 600;
+}
+
+/* --- Cartões e Elementos Interativos (Soft Edges) --- */
+.book-card, .ranking-card, .reward-card, #latestFeedContainer {
+    background-color: var(--color-card-bg);
+    border-radius: 12px; /* Cantos mais suaves */
+    box-shadow: var(--shadow-subtle);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.book-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.book-card img {
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+/* --- Formulários e Botões --- */
+input[type="email"], input[type="password"], input[type="text"] {
+    border-radius: 8px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Botões principais de Ação */
+button:not(.nav-button) {
+    border-radius: 8px;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+/* --- Modal --- */
+#bookDetailModal .bg-white {
+    border-radius: 16px;
+}
+
+
+/* --- Detalhe da Lista Negra --- */
+.border-red-400 {
+    border-color: #F87171; /* Red 400 */
+    background-color: #FEF2F2; /* Soft Red Background */
+}
+.text-red-700 {
+    color: #B91C1C; /* Red 700 */
+}
+
+/* --- Grid de Aluguel (Meus Livros) --- */
+.rentals-grid > div {
+    border-radius: 12px;
+    background-color: var(--color-card-bg);
+    box-shadow: var(--shadow-subtle);
+    /* Linha colorida na lateral para destaque */
+    border-left: 5px solid var(--color-primary); 
+}
+
+/* --- Estilo de Toggle (Modo Fantasma) --- */
+.toggle-switch {
+    /* Base style for the checkbox */
+    appearance: none;
+    -webkit-appearance: none;
+    width: 40px;
+    height: 20px;
+    background: #CCC;
+    border-radius: 10px;
+    position: relative;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.toggle-switch::after {
+    /* Style for the handle (the moving circle) */
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: white;
+    border-radius: 50%;
+    transition: left 0.2s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.toggle-switch:checked {
+    background: var(--color-primary);
+}
+
+.toggle-switch:checked::after {
+    left: 22px;
+}
+
+/* --- 3D Login Scene (Mantido) --- */
+#login-bg-canvas {
+    z-index: -10;
 }
