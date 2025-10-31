@@ -1,0 +1,9 @@
+{
+  "name": "projeto-biblioteca",
+  "private": true,
+  "scripts": {
+    "start": "npm run start --prefix backend",
+    "dev": "npm run dev --prefix backend",
+    "db:init": "psql -U postgres -d biblioteca_academica -f database/schema.sql && psql -U postgres -d biblioteca_academica -f database/seed.sql"
+  }
+}
