@@ -197,8 +197,6 @@ http://localhost:8000
 
 - [📝 Documentação Completa](https://docs.google.com/document/d/1PToJ3kzgytBEnweqFLogQD-0eG5USEUslSgHcSQ09s4/edit?usp=sharing)
 - [🌐 Demo ao Vivo](https://herondsx.github.io/Site_Biblioteca/)
-- [💾 Repositório GitHub](https://github.com/Herondsx/Projeto_Eng)
-
 ---
 
 ## 📄 Licença
