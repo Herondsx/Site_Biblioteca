@@ -1,6 +1,9 @@
 # 📚 Sistema de Biblioteca Acadêmica
 
 ![Library System](https://img.shields.io/badge/Library-System-teal?style=for-the-badge)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=node.js&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
@@ -9,13 +12,13 @@
 
 **Uma plataforma moderna que combina gestão de biblioteca digital com rede social literária**
 
-[Demo ao Vivo](https://herondsx.github.io/Site_Biblioteca/) • [Documentação](https://docs.google.com/document/d/1PToJ3kzgytBEnweqFLogQD-0eG5USEUslSgHcSQ09s4/edit?usp=sharing) • [Reportar Bug](https://github.com/Herondsx/Projeto_Eng/issues)
+• [Documentação](https://docs.google.com/document/d/1PToJ3kzgytBEnweqFLogQD-0eG5USEUslSgHcSQ09s4/edit?usp=sharing) • [Reportar Bug](https://github.com/Herondsx/Site_Biblioteca/issues)
 
 ---
 
 ## 🎯 Sobre o Projeto
 
-O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvolvida como projeto de Engenharia de Software pela FEI (Fundação Educacional Inaciana Padre Sabóia de Medeiros). O sistema une a eficiência de uma biblioteca digital moderna com recursos de rede social, criando uma comunidade vibrante de leitores.
+O **Sistema de Biblioteca Acadêmica** é uma aplicação web full-stack desenvolvida como projeto de Engenharia de Software pela FEI (Fundação Educacional Inaciana Padre Sabóia de Medeiros). O sistema une a eficiência de uma biblioteca digital moderna com recursos de rede social, criando uma comunidade vibrante de leitores.
 
 ### ✨ Principais Características
 
@@ -24,7 +27,7 @@ O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvol
 - 💬 **Feed Comunitário** - Compartilhe resenhas e interaja com outros leitores
 - 🎨 **Interface 3D Interativa** - Background animado com Three.js
 - 📱 **Design Responsivo** - Experiência otimizada para todos os dispositivos
-- 🔐 **Sistema de Autenticação** - Login seguro com hash de senhas
+- 🔐 **Sistema de Autenticação** - Login seguro com backend robusto
 - ⚡ **Performance Otimizada** - Busca e filtragem instantânea de livros
 
 ---
@@ -71,6 +74,14 @@ O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvol
 
 ## 🛠️ Tecnologias Utilizadas
 
+### Backend
+- **Node.js** - Runtime JavaScript
+- **Express** - Framework web minimalista
+- **PostgreSQL** - Banco de dados relacional
+- **bcrypt** - Criptografia de senhas
+- **CORS** - Configuração de requisições cross-origin
+- **dotenv** - Gerenciamento de variáveis de ambiente
+
 ### Frontend
 - **HTML5** - Estrutura semântica
 - **Tailwind CSS** - Estilização responsiva
@@ -78,13 +89,10 @@ O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvol
 - **Three.js** - Efeitos 3D e animações
 - **Day.js** - Manipulação de datas
 
-### Armazenamento
-- **LocalStorage** - Persistência de dados no navegador
-- **SessionStorage** - Gerenciamento de sessão de usuário
-
 ### Ferramentas de Desenvolvimento
 - **Git/GitHub** - Controle de versão
-- **Google Forms** - Pesquisa com usuários
+- **nodemon** - Hot-reload em desenvolvimento
+- **PostgreSQL** - Sistema de gerenciamento de banco de dados
 
 ---
 
@@ -92,28 +100,66 @@ O **Sistema de Biblioteca Acadêmica** é uma aplicação web inovadora desenvol
 
 ### Pré-requisitos
 
-- Navegador web moderno (Chrome, Firefox, Safari, Edge)
-- Servidor web local (opcional, para desenvolvimento)
+```bash
+Node.js >= 16.x
+PostgreSQL >= 15.x
+npm >= 8.x
+```
 
 ### Instalação
 
 **1. Clone o repositório**
 ```bash
-git clone https://github.com/Herondsx/Projeto_Eng.git
+git clone https://github.com/Herondsx/Site_Biblioteca.git
 cd Site_Biblioteca
 ```
 
-**2. Abra o arquivo HTML**
+**2. Configure o Banco de Dados**
 ```bash
-# Abra index.html diretamente no navegador ou use um servidor local
-python -m http.server 8000
-# ou
-npx serve
+# Acessar PostgreSQL
+psql -U postgres
+
+# Criar banco de dados
+CREATE DATABASE biblioteca_academica;
+
+# Executar scripts de criação das tabelas (se disponível)
+\i database/schema.sql
 ```
 
-**3. Acesse a aplicação**
+**3. Configure o Backend**
+```bash
+# Navegue até a pasta backend
+cd backend
+
+# Instale as dependências (apenas primeira vez)
+npm install
+
+# Configure o arquivo .env com suas credenciais do PostgreSQL
+# Edite o arquivo .env e adicione:
+# DB_USER=postgres
+# DB_HOST=localhost
+# DB_NAME=biblioteca_academica
+# DB_PASSWORD=sua_senha_aqui
+# DB_PORT=5432
+# PORT=3000
+
+# Inicie o servidor em modo desenvolvimento
+npm run dev
 ```
-http://localhost:8000
+
+**4. Configure o Frontend**
+```bash
+# Em outra janela do terminal, vá para a pasta frontend
+cd frontend
+
+# Abra o index.html com Live Server (extensão do VS Code)
+# Ou clique com botão direito no index.html > "Open with Live Server"
+```
+
+**5. Acesse a aplicação**
+```
+Frontend: http://localhost:5500 (ou a porta do Live Server)
+Backend API: http://localhost:3000
 ```
 
 ### Credenciais de Teste
@@ -158,45 +204,47 @@ http://localhost:8000
 
 ### Loja de Recompensas
 
-- **1000 pontos** - Aluguel Grátis por 1 Mês
-- **500 pontos** - Ícone de Perfil Exclusivo
-- **300 pontos** - Extensão de Prazo (+15 dias)
+- **50 pontos** - Modo Fantasma (perfil anônimo)
+- **100 pontos** - Empréstimo Extra
+- **250 pontos** - Tier Expert (60 dias permanente)
+- **1000 pontos** - Título Exclusivo: "Lorde do Conhecimento"
 
 ---
 
 ## 📈 Análise de Custos
 
 ### Pequena Escala (menor que 5.000 usuários)
-- Hospedagem em nuvem
+- Hospedagem em nuvem (VPS)
 - CDN básico
-- Banco de dados compartilhado
+- Banco de dados PostgreSQL gerenciado
 - **Custo estimado:** aproximadamente R$ 300/mês
 
 ### Larga Escala (maior que 50.000 usuários)
-- Servidores dedicados
-- CDN robusta
-- Cluster de banco de dados
-- Sistema de busca otimizado
+- Servidores dedicados com load balancer
+- CDN robusta e global
+- Cluster de banco de dados PostgreSQL
+- Sistema de cache (Redis)
+- Monitoramento e backups
 - **Custo estimado:** aproximadamente R$ 7.400/mês
 
 ---
 
 ## 👥 Equipe de Desenvolvimento
 
-- **Eric Antunes Alves** - Desenvolvedor
-- **Gustavo Matias Félix** - Desenvolvedor
-- **Heron de Souza** - Desenvolvedor
-- **João Matheus E. B. da Silva** - Desenvolvedor
-- **Lucas Galvano de Paula** - Desenvolvedor
+- **Eric Antunes Alves** - Desenvolvedor -  
+- **Gustavo Matias Félix** - Desenvolvedor - [Github](https://github.com/Gustavo-Matias19)
+- **Heron de Souza** - Desenvolvedor - [Github](https://github.com/Herondsx)
+- **João Matheus E. B. da Silva** - Desenvolvedor - [Github](https://github.com/JoaoMateusSilva)
+- **Lucas Galvano de Paula** - Desenvolvedor - [Github](https://github.com/LucasGalvano)
 - **Vinicius T. Pereira** - Desenvolvedor
 
 ---
 
-
 ## 🔗 Links Úteis
 
 - [📝 Documentação Completa](https://docs.google.com/document/d/1PToJ3kzgytBEnweqFLogQD-0eG5USEUslSgHcSQ09s4/edit?usp=sharing)
-- [🌐 Demo ao Vivo](https://herondsx.github.io/Site_Biblioteca/)
+- [🌳 Árvore do Projeto](https://herondsx.github.io/Projeto_Eng/)
+
 ---
 
 ## 📄 Licença
