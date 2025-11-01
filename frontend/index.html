@@ -23,7 +23,7 @@
             <h1 class="text-3xl font-extrabold text-teal-600 mb-6 text-center">Biblioteca Acadêmica 3D</h1>
             
             <form id="loginForm" class="space-y-4">
-                <input type="email" id="loginEmail" placeholder="Email" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
+                <input type="text" id="loginEmail" placeholder="Email ou usuário (ex: admin)" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
                 <input type="password" id="loginPassword" placeholder="Senha" required class="w-full p-3 border border-gray-300 rounded-lg focus:ring-teal-500 focus:border-teal-500">
                 <button type="submit" class="w-full bg-teal-600 text-white p-3 rounded-lg font-semibold hover:bg-teal-700 transition duration-150">Entrar</button>
                 <div id="loginMessage" class="text-center text-red-500 text-sm mt-2"></div>
@@ -114,31 +114,24 @@
                     Usuários na Lista Negra (Inadimplência)
                 </h2>
                 <div id="blacklistContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    </div>
-
-
-                <h2 class="text-2xl font-bold mb-4 border-t pt-8 mt-8">Últimas Ações na Comunidade</h2>
-                <div id="latestFeedContainer" class="bg-white p-6 rounded-lg shadow-lg space-y-4">
-                    <p class="text-gray-500">Conteúdo do feed virá aqui...</p>
                 </div>
             </section>
 
             <section id="books" class="hidden">
                 <h2 class="text-2xl font-bold mb-4">📚 Catálogo de Livros</h2>
                 <div id="bookListContainer" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-                    </div>
+                </div>
             </section>
 
             <section id="myRentals" class="hidden">
-                <h2>📚 Meus Livros Alugados</h2>
+                <h2 class="text-2xl font-bold mb-4">📚 Meus Livros Alugados</h2>
                 <div id="rentalListContainer" class="rentals-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    </div>
+                </div>
             </section>
             
             <section id="feed" class="hidden">
                 <h2 class="text-2xl font-bold mb-4">💬 Feed da Comunidade</h2>
                 <div id="postsContainer" class="space-y-6">
-                    <p class="text-gray-500">O feed está em desenvolvimento. Posts aparecerão aqui.</p>
                 </div>
             </section>
 
@@ -177,53 +170,31 @@
                 </div>
             </section>
 
-
             <section id="adminSection" class="admin-section hidden bg-red-50 border border-red-200 p-6 rounded-lg shadow-xl space-y-6">
                 <h2 class="text-3xl font-bold text-red-700">⚙️ Painel Administrativo</h2>
 
                 <div id="admin-user-list">
                     <h3 class="text-2xl font-semibold mb-3 text-red-600">Lista de Usuários</h3>
                     <div id="userListContainer" class="overflow-x-auto">
-                        </div>
+                    </div>
                 </div>
 
                 <div id="admin-rentals">
                     <h3 class="text-2xl font-semibold mb-3 text-red-600">Empréstimos Ativos</h3>
                     <div id="globalRentalsContainer" class="overflow-x-auto">
-                        </div>
+                    </div>
                 </div>
             </section>
             
             <div id="bookDetailModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-                <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl relative">
+                <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-2xl relative max-h-[90vh] overflow-y-auto">
                     <button class="absolute top-4 right-4 text-gray-600 hover:text-gray-900" onclick="closeBookDetailModal()">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
                     </button>
                     <div id="bookDetailContent">
-                        </div>
-                </div>
-            </div>
-
-            <div id="adminModal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 hidden">
-                <div class="bg-white p-8 rounded-lg shadow-2xl w-full max-w-4xl relative">
-                    <button class="absolute top-4 right-4 text-gray-600 hover:text-gray-900" onclick="closeAdminModal()">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                    <h2 class="text-2xl font-bold mb-4">Simulação do Banco de Dados</h2>
-                    <p class="text-gray-600 mb-4">Qualquer interação na interface atualizará estas tabelas instantaneamente.</p>
-                    <div class="flex border-b mb-4 overflow-x-auto">
-                        <button data-tab="db-books" class="db-tab p-4 text-teal-600 border-b-2 border-teal-600 font-semibold whitespace-nowrap">Livros</button>
-                        <button data-tab="db-users" class="db-tab p-4 text-gray-500 whitespace-nowrap">Usuários</button>
-                        <button data-tab="db-rentals" class="db-tab p-4 text-gray-500 whitespace-nowrap">Aluguéis</button>
-                        <button data-tab="db-posts" class="db-tab p-4 text-gray-500 whitespace-nowrap">Posts</button>
                     </div>
-                    <div id="db-books-content" class="db-tab-content"><div class="db-grid"><table id="db-books-table"></table></div></div>
-                    <div id="db-users-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-users-table"></table></div></div>
-                    <div id="db-rentals-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-rentals-table"></table></div></div>
-                    <div id="db-posts-content" class="db-tab-content hidden"><div class="db-grid"><table id="db-posts-table"></table></div></div>
                 </div>
             </div>
-
         </main>
     </div>
 

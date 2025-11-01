@@ -10,15 +10,16 @@ const API_URL = 'http://localhost:3000/api';
 
 // Estado global e variáveis de cena
 let currentUser = null;
-let allBooks = []; 
-let loginScene; // appScene removida
-let loginAnimationId; // appAnimationId removida
+let allBooks = [];
+let allPosts = [];
+let userVotes = {}; // Armazena votos do usuário {postId: 'like'/'dislike'}
+let loginScene;
+let loginAnimationId;
 
 // ==========================================
 // 3D SCENE MANAGEMENT
 // ==========================================
 
-// Cena de login mantida
 const initLogin3D = () => {
     const canvas = document.getElementById('login-bg-canvas');
     if (!canvas) return { stop: () => {} };
@@ -57,18 +58,14 @@ const initLogin3D = () => {
     return { stop: () => { cancelAnimationFrame(loginAnimationId); window.removeEventListener('resize', resize); } };
 };
 
-// Rosquinha 3D REMOVIDA - Funções para a cena da aplicação agora são vazias
 const initApp3D = () => {
-    // Retorna um objeto stop vazio, pois o canvas foi removido
-    return { stop: () => { /* Nada a parar */ } };
+    return { stop: () => {} };
 };
-
 
 // ==========================================
 // GERAL / UTILITÁRIOS
 // ==========================================
 
-// Função para trocar de seção
 const showSection = (sectionId) => {
     document.querySelectorAll('main section').forEach(section => {
         section.classList.add('hidden');
@@ -93,12 +90,27 @@ const showSection = (sectionId) => {
     if (sectionId === 'books') {
         loadBooks(); 
     }
+    if (sectionId === 'feed') {
+        loadPosts();
+    }
+    if (sectionId === 'adminSection') {
+        loadAdminData();
+    }
 };
 
-const updateUserDataDisplay = (user) => {
+const updateUserDataDisplay = async (user) => {
     document.getElementById('userName').textContent = user.name;
     document.getElementById('welcomeName').textContent = user.name;
-    document.getElementById('pointsValue').textContent = user.points;
+    
+    // Atualiza pontos em tempo real
+    try {
+        const pointsRes = await fetch(`${API_URL}/users/${user.id}/points`);
+        const pointsData = await pointsRes.json();
+        currentUser.points = pointsData.points;
+        document.getElementById('pointsValue').textContent = pointsData.points;
+    } catch (error) {
+        document.getElementById('pointsValue').textContent = user.points;
+    }
     
     const adminButton = document.getElementById('adminButton');
     adminButton.classList.toggle('hidden', !user.isAdmin);
@@ -160,7 +172,6 @@ const handleLogin = async (e) => {
         document.getElementById('appContainer').style.display = 'block';
         
         if (loginScene && loginScene.stop) loginScene.stop();
-        // Não precisamos inicializar o appScene, pois ele não faz mais nada
         
         loadInitialData(data).catch(e => console.error("Erro ao carregar dados iniciais:", e));
 
@@ -214,7 +225,6 @@ const handleLogout = () => {
     sessionStorage.removeItem('library_currentUser');
     currentUser = null;
     
-    // appScene não precisa ser parado
     if (loginScene && loginScene.stop) loginScene.stop();
     loginScene = initLogin3D();
 
@@ -224,6 +234,32 @@ const handleLogout = () => {
     document.getElementById('loginForm').reset();
     document.getElementById('loginMessage').textContent = '';
     showSection('home');
+};
+
+// ==========================================
+// TOGGLE MODO FANTASMA
+// ==========================================
+
+const toggleModoFantasma = async () => {
+    if (!currentUser) return;
+
+    try {
+        const response = await fetch(`${API_URL}/users/${currentUser.id}/toggle-ghost`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await response.json();
+        
+        if (response.ok) {
+            currentUser.modoFantasma = data.modoFantasma;
+            saveUserSession(currentUser);
+            alert(`Modo Fantasma ${data.modoFantasma ? 'ATIVADO' : 'DESATIVADO'}!`);
+        }
+    } catch (error) {
+        console.error('Erro ao alternar modo fantasma:', error);
+        alert('Erro ao alternar modo fantasma.');
+    }
 };
 
 // ==========================================
@@ -299,6 +335,7 @@ const handleReturn = async (rentalId, rentalTitle) => {
         }
 
         alert(`Livro "${rentalTitle}" devolvido com sucesso!`);
+        await updateUserDataDisplay(currentUser);
         loadBooks();
         loadRentals(currentUser.id); 
         loadBlacklist(); 
@@ -308,7 +345,6 @@ const handleReturn = async (rentalId, rentalTitle) => {
         alert('Erro de conexão ou servidor ao tentar devolver.');
     }
 };
-
 
 const handleRewardRedeem = async (rewardType, cost, description) => {
     if (!currentUser) {
@@ -338,15 +374,7 @@ const handleRewardRedeem = async (rewardType, cost, description) => {
         }
 
         alert(data.message);
-        
-        // Atualiza os pontos no display
-        if (currentUser.points >= cost) {
-             currentUser.points -= cost;
-        } else {
-             // Seria ideal recarregar os dados do usuário do backend aqui para garantir a pontuação correta
-             console.warn("Pontuação local incorreta. Atualizando display.");
-        }
-        updateUserDataDisplay(currentUser); 
+        await updateUserDataDisplay(currentUser);
         loadRankings(); 
 
     } catch (error) {
@@ -355,12 +383,40 @@ const handleRewardRedeem = async (rewardType, cost, description) => {
     }
 };
 
+const handleRating = async (bookId, rating) => {
+    if (!currentUser) {
+        alert("Você precisa estar logado para avaliar.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/ratings`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                bookId, 
+                userId: currentUser.id, 
+                rating,
+                comment: '' 
+            })
+        });
+
+        if (response.ok) {
+            alert('Avaliação registrada! Você ganhou 10 pontos.');
+            await updateUserDataDisplay(currentUser);
+            loadBooks();
+            openBookDetailModal(bookId); // Recarrega o modal
+        }
+    } catch (error) {
+        console.error('Erro ao avaliar:', error);
+    }
+};
 
 // ==========================================
 // FUNÇÕES DE MODAL 
 // ==========================================
 
-const openBookDetailModal = (bookId) => {
+const openBookDetailModal = async (bookId) => {
     const book = allBooks.find(b => b.id === bookId);
     if (!book) return;
 
@@ -391,11 +447,10 @@ const openBookDetailModal = (bookId) => {
           `
         : '';
 
-
     content.innerHTML = `
-        <div class="flex space-x-6">
-            <img src="${book.cover}" alt="${book.title}" class="w-40 h-60 object-cover rounded-lg shadow-md">
-            <div>
+        <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-6">
+            <img src="${book.cover}" alt="${book.title}" class="w-full md:w-40 h-60 object-cover rounded-lg shadow-md">
+            <div class="flex-1">
                 <h2 class="text-3xl font-bold text-gray-900">${book.title}</h2>
                 <p class="text-xl text-gray-600 mb-4">Autor: ${book.author}</p>
                 <p class="text-md font-medium mb-2">Categoria: <span class="text-teal-600">${book.category}</span></p>
@@ -414,19 +469,58 @@ const openBookDetailModal = (bookId) => {
 
         ${rentalButton}
 
+        <h3 class="font-bold text-xl mt-8 mb-3">Avaliar este Livro</h3>
+        <div class="flex items-center space-x-2">
+            ${[1,2,3,4,5].map(star => 
+                `<button onclick="handleRating(${book.id}, ${star})" class="text-3xl text-gray-300 hover:text-yellow-400 transition-all">★</button>`
+            ).join('')}
+        </div>
+
         <h3 class="font-bold text-xl mt-8 mb-3">Avaliações dos Usuários</h3>
         <div id="bookRatingsContainer" class="space-y-4">
-            <p class="text-gray-500">Avaliações serão carregadas aqui...</p>
+            <p class="text-gray-500">Carregando avaliações...</p>
         </div>
-        
     `;
+    
     modal.classList.remove('hidden');
+    
+    // Carrega avaliações
+    loadBookRatings(bookId);
+};
+
+const loadBookRatings = async (bookId) => {
+    const container = document.getElementById('bookRatingsContainer');
+    if (!container) return;
+
+    try {
+        const response = await fetch(`${API_URL}/books/${bookId}/ratings`);
+        const ratings = await response.json();
+
+        if (ratings.length === 0) {
+            container.innerHTML = '<p class="text-gray-500">Nenhuma avaliação ainda. Seja o primeiro!</p>';
+            return;
+        }
+
+        container.innerHTML = ratings.map(r => `
+            <div class="p-4 bg-gray-50 rounded-lg">
+                <div class="flex justify-between items-start mb-2">
+                    <p class="font-semibold">${r.userName}</p>
+                    <span class="text-yellow-500">${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}</span>
+                </div>
+                ${r.comment ? `<p class="text-sm text-gray-700">${r.comment}</p>` : ''}
+                <p class="text-xs text-gray-400 mt-2">${dayjs(r.date).format('DD/MM/YYYY HH:mm')}</p>
+            </div>
+        `).join('');
+
+    } catch (error) {
+        console.error('Erro ao carregar avaliações:', error);
+        container.innerHTML = '<p class="text-red-500">Erro ao carregar avaliações.</p>';
+    }
 };
 
 const closeBookDetailModal = () => {
     document.getElementById('bookDetailModal').classList.add('hidden');
 };
-
 
 // ==========================================
 // FUNÇÕES DE DADOS (RENDERIZAÇÃO)
@@ -472,7 +566,6 @@ const loadBooks = async () => {
     }
 };
 
-// Carrega e renderiza a lista negra 
 const loadBlacklist = async () => {
     const container = document.getElementById('blacklistContainer');
     if (!container) return; 
@@ -513,7 +606,6 @@ const loadBlacklist = async () => {
     }
 };
 
-
 const loadRentals = async (userId) => {
     const container = document.getElementById('rentalListContainer');
     if (!container) return;
@@ -538,7 +630,7 @@ const loadRentals = async (userId) => {
             if (rental.status === 'devolvido') {
                 statusText = 'Devolvido';
                 statusClass = 'bg-green-100 text-green-800';
-            } else if (new Date(rental.dueDate) < new Date()) {
+            } else if (rental.status === 'atrasado') {
                 statusText = 'ATRASADO';
                 statusClass = 'bg-red-100 text-red-800 font-bold';
             }
@@ -592,14 +684,295 @@ const loadRankings = async () => {
     }
 };
 
-// Função principal chamada após login/carregamento inicial
-const loadInitialData = (user) => {
-    updateUserDataDisplay(user);
+// ==========================================
+// FEED SOCIAL (POSTS)
+// ==========================================
+
+const loadPosts = async () => {
+    const container = document.getElementById('postsContainer');
+    if (!container) return;
+    
+    container.innerHTML = '<p class="text-gray-500">Carregando posts...</p>';
+
+    try {
+        // Carrega posts
+        const postsResponse = await fetch(`${API_URL}/posts`);
+        const posts = await postsResponse.json();
+        allPosts = posts;
+
+        // Carrega votos do usuário
+        if (currentUser) {
+            const votesResponse = await fetch(`${API_URL}/posts/votes/user/${currentUser.id}`);
+            userVotes = await votesResponse.json();
+        }
+
+        if (posts.length === 0) {
+            container.innerHTML = '<p class="text-gray-500">Nenhum post ainda. Seja o primeiro a postar!</p>';
+            return;
+        }
+
+        container.innerHTML = posts.map(post => {
+            const userVote = userVotes[post.id];
+            const likeClass = userVote === 'like' ? 'text-teal-600' : 'text-gray-500 hover:text-teal-600';
+            const dislikeClass = userVote === 'dislike' ? 'text-red-600' : 'text-gray-500 hover:text-red-600';
+            const timeAgo = dayjs(post.data_criacao).fromNow();
+
+            return `
+                <div class="bg-white p-6 rounded-lg shadow-lg">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold">
+                            ${post.usuario_nome.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-900">${post.usuario_nome}</p>
+                            <p class="text-xs text-gray-500">${timeAgo}</p>
+                        </div>
+                    </div>
+                    <p class="text-gray-700 whitespace-pre-wrap mb-4">${post.conteudo}</p>
+                    <div class="flex items-center space-x-6 border-t pt-3">
+                        <button onclick="voteOnPost(${post.id}, 'like')" class="flex items-center space-x-1 ${likeClass} transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333V17a1 1 0 001 1h6.364a1 1 0 00.949-.707l2.716-6.839A.5.5 0 0016.5 9.5H13V6a1 1 0 00-1-1h-1.48a1 1 0 00-.986.838L8.43 9.5H6.5a.5.5 0 00-.5.5v.333z"/>
+                            </svg>
+                            <span class="font-medium">${post.likes}</span>
+                        </button>
+                        <button onclick="voteOnPost(${post.id}, 'dislike')" class="flex items-center space-x-1 ${dislikeClass} transition-all">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M18 9.5a1.5 1.5 0 11-3 0v-6a1.5 1.5 0 013 0v6zM14 9.667V3a1 1 0 00-1-1h-6.364a1 1 0 00-.949.707l-2.716 6.839A.5.5 0 003.5 10.5H7v7a1 1 0 001 1h1.48a1 1 0 00.986-.838L11.57 10.5h1.93a.5.5 0 00.5-.5v-.333z"/>
+                            </svg>
+                            <span class="font-medium">${post.dislikes}</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Erro ao carregar posts:', error);
+        container.innerHTML = '<p class="text-red-500">Erro ao carregar feed.</p>';
+    }
+};
+
+const createPost = async (content) => {
+    if (!currentUser || !content.trim()) return;
+
+    try {
+        const response = await fetch(`${API_URL}/posts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id, content })
+        });
+
+        if (response.ok) {
+            loadPosts();
+        }
+    } catch (error) {
+        console.error('Erro ao criar post:', error);
+        alert('Erro ao publicar. Tente novamente.');
+    }
+};
+
+const voteOnPost = async (postId, voteType) => {
+    if (!currentUser) {
+        alert('Faça login para votar.');
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_URL}/posts/${postId}/vote`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: currentUser.id, voteType })
+        });
+
+        if (response.ok) {
+            loadPosts(); // Recarrega os posts
+        }
+    } catch (error) {
+        console.error('Erro ao votar:', error);
+    }
+};
+
+// ==========================================
+// PAINEL ADMIN
+// ==========================================
+
+const loadAdminData = async () => {
+    if (!currentUser || !currentUser.isAdmin) return;
+
+    await loadAdminUsers();
+    await loadGlobalRentals();
+};
+
+const loadAdminUsers = async () => {
+    const container = document.getElementById('userListContainer');
+    if (!container) return;
+
+    container.innerHTML = '<p class="text-gray-500">Carregando usuários...</p>';
+
+    try {
+        const response = await fetch(`${API_URL}/users`);
+        const users = await response.json();
+
+        container.innerHTML = `
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pontos</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fantasma</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${users.map(user => `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${user.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">${user.nome}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${user.email}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.tipo_usuario === 'admin' ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'}">
+                                    ${user.tipo_usuario}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${user.points}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${user.modo_fantasma ? '👻' : '—'}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${user.ativo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}">
+                                    ${user.ativo ? 'Ativo' : 'Inativo'}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+
+    } catch (error) {
+        console.error('Erro ao carregar usuários:', error);
+        container.innerHTML = '<p class="text-red-500">Erro ao carregar usuários.</p>';
+    }
+};
+
+const loadGlobalRentals = async () => {
+    const container = document.getElementById('globalRentalsContainer');
+    if (!container) return;
+
+    container.innerHTML = '<p class="text-gray-500">Carregando empréstimos...</p>';
+
+    try {
+        const response = await fetch(`${API_URL}/rentals`);
+        const rentals = await response.json();
+
+        container.innerHTML = `
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Usuário</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Livro</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tier</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data Empréstimo</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Devolução Prevista</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Atraso (dias)</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    ${rentals.slice(0, 50).map(rental => {
+                        let statusClass = 'bg-blue-100 text-blue-800';
+                        if (rental.status === 'devolvido') statusClass = 'bg-green-100 text-green-800';
+                        if (rental.status === 'atrasado') statusClass = 'bg-red-100 text-red-800';
+                        
+                        return `
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${rental.id}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${rental.usuario_nome}</td>
+                            <td class="px-6 py-4 text-sm">${rental.livro_titulo}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${rental.tier_nome}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${new Date(rental.data_emprestimo).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">${new Date(rental.data_devolucao_prevista).toLocaleDateString()}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                                    ${rental.status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm ${rental.dias_atraso > 0 ? 'text-red-600 font-bold' : ''}">${rental.dias_atraso || 0}</td>
+                        </tr>
+                    `}).join('')}
+                </tbody>
+            </table>
+        `;
+
+    } catch (error) {
+        console.error('Erro ao carregar empréstimos globais:', error);
+        container.innerHTML = '<p class="text-red-500">Erro ao carregar empréstimos.</p>';
+    }
+};
+
+// ==========================================
+// FEED - FORMULÁRIO DE NOVO POST
+// ==========================================
+
+const setupFeedForm = () => {
+    const feedSection = document.getElementById('feed');
+    if (!feedSection) return;
+
+    const formHtml = `
+        <div class="bg-white p-6 rounded-lg shadow-lg mb-6">
+            <h3 class="text-xl font-bold mb-4 text-teal-600">Compartilhe suas Opiniões</h3>
+            <form id="newPostForm" onsubmit="handleNewPostSubmit(event)">
+                <textarea 
+                    id="newPostContent" 
+                    class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 resize-none" 
+                    rows="3" 
+                    placeholder="O que você está lendo? Compartilhe suas impressões..."
+                    required
+                ></textarea>
+                <div class="flex justify-end mt-3">
+                    <button type="submit" class="bg-teal-600 hover:bg-teal-700 text-white font-semibold py-2 px-6 rounded-lg transition-all">
+                        Publicar
+                    </button>
+                </div>
+            </form>
+        </div>
+    `;
+
+    const postsContainer = document.getElementById('postsContainer');
+    if (postsContainer && !document.getElementById('newPostForm')) {
+        postsContainer.insertAdjacentHTML('beforebegin', formHtml);
+    }
+};
+
+const handleNewPostSubmit = (event) => {
+    event.preventDefault();
+    const content = document.getElementById('newPostContent').value;
+    
+    if (!currentUser) {
+        alert('Faça login para publicar.');
+        return;
+    }
+
+    createPost(content).then(() => {
+        document.getElementById('newPostContent').value = '';
+    });
+};
+
+// ==========================================
+// INICIALIZAÇÃO - Função Principal
+// ==========================================
+
+const loadInitialData = async (user) => {
+    await updateUserDataDisplay(user);
     
     loadBooks();
     loadRankings();
     loadRentals(user.id); 
-    loadBlacklist(); 
+    loadBlacklist();
+    setupFeedForm();
 
     showSection('home');
 };
@@ -617,6 +990,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const registerForm = document.getElementById('registerForm');
     if (registerForm) {
         registerForm.addEventListener('submit', handleRegister);
+    }
+
+    // Listener para modo fantasma
+    const fantasmaToggle = document.getElementById('modoFantasma');
+    if (fantasmaToggle) {
+        fantasmaToggle.addEventListener('change', toggleModoFantasma);
     }
     
     const authContainer = document.getElementById('authContainer');
@@ -640,7 +1019,6 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.style.display = 'block';
         
         if (loginScene && loginScene.stop) loginScene.stop();
-        // appScene removida
         
         loadInitialData(currentUser).catch(e => console.error(e));
     } else {
@@ -648,7 +1026,6 @@ document.addEventListener('DOMContentLoaded', () => {
         appContainer.style.display = 'none';
     }
 
-    // appScene removida, cleanup é mais simples
     window.addEventListener('beforeunload', () => {
         if (loginScene && loginScene.stop) loginScene.stop();
     });
